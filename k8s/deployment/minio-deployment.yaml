@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dc-minio-deployment
+  labels:
+    tier: storage
+    app: minio
+spec:
+  selector:
+    matchLabels:
+      tier: storage
+      app: minio
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        tier: storage
+        app: minio
+    spec:
+      containers:
+        - name: minio
+          image: minio/minio:latest
+          imagePullPolicy: Always
+          command: ['minio', 'server', '--console-address', ':9001', '/data']
+          env:
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: dc-minio-secret
+                  key: minio_root_user
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dc-minio-secret
+                  key: minio_root_password
+          ports:
+            - name: minio-port
+              containerPort: 9000
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          volumeMounts:
+            - name: data-volume
+              mountPath: /data
+      imagePullSecrets:
+        - name: dc-imagepull-secret
+      volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: dc-minio-pvc

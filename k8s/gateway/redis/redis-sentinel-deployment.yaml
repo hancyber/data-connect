@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-sentinel-deployment
+  labels:
+    tier: database
+    app: redis-sentinel
+    role: sentinel
+spec:
+  selector:
+    matchLabels:
+      tier: database
+      app: redis-sentinel
+      role: sentinel
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        tier: database
+        app: redis-sentinel
+        role: sentinel
+        redis.access: 'true'
+    spec:
+      containers:
+        - name: redis
+          image: hgbdev/hancyberML-redis:1.0.0
+          imagePullPolicy: Always
+          command: ["/root/redis/src/redis-sentinel"]
+          args: ["/etc/redis/sentinel.conf"]
+          ports:
+            - name: sentinel-port
+              containerPort: 26379
+          resources:
+            limits:
+              cpu: 100m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 512Mi
+          volumeMounts:
+            - name: redis-tls-rootca
+              mountPath: /etc/tls/rootca.crt
+              subPath: rootca.crt
+            - name: redis-tls-cert
+              mountPath: /etc/tls/redis.crt
+              subPath: redis.crt
+            - name: redis-tls-key
+              mountPath: /etc/tls/redis.key
+              subPath: redis.key
+      imagePullSecrets:
+        - name: dc-imagepull-secret
+      volumes:
+        - name: redis-tls-rootca
+          configMap:
+            name: redis-tls-config
+            items:
+              - key: rootca.crt
+                path: rootca.crt
+        - name: redis-tls-cert
+          configMap:
+            name: redis-tls-config
+            items:
+              - key: redis.crt
+                path: redis.crt
+        - name: redis-tls-key
+          configMap:
+            name: redis-tls-config
+            items:
+              - key: redis.key
+                path: redis.key

@@ -1,0 +1,46 @@
+[base]
+config.section = common,embulk,socket,redis
+
+[embulk]
+tpl.path = template
+tpl.main = main.tpl
+path.conf = conf
+path.log.guess = log/guess
+path.log.preview = log/preview
+path.log.run = log/run
+file.guess = bin/embulk_guess.sh
+file.preview = bin/embulk_preview.sh
+file.run = bin/embulk_run.sh
+
+# for local test
+# tpl.path = /Users/gyubeomhan/Works/workspace/data-connector/template
+# tpl.main = main.tpl
+# path.conf = /Users/gyubeomhan/Works/workspace/data-connector/conf
+# path.log.guess = /Users/gyubeomhan/Works/workspace/data-connector/log/guess
+# path.log.preview = /Users/gyubeomhan/Works/workspace/data-connector/log/preview
+# path.log.run = /Users/gyubeomhan/Works/workspace/data-connector/log/run
+# file.guess = /Users/gyubeomhan/Works/workspace/data-connector/bin/embulk_guess.sh
+# file.preview = /Users/gyubeomhan/Works/workspace/data-connector/bin/embulk_preview.sh
+# file.run = /Users/gyubeomhan/Works/workspace/data-connector/bin/embulk_run.sh
+
+[common]
+gateway = socket
+# gateway = redis
+
+[socket]
+host = 0.0.0.0
+port = 19999
+backlog = 32
+buffer.size = 8192
+
+[redis]
+service.name = redis-service
+ssl.ca.certs = /Users/gyubeomhan/Works/workspace/hancyberML-service/hancyberML-infra/hancyberML-redis/tls/certs/rootca.crt
+server.info = xxx.xxx.xxx.xxx:26379
+gateway.channel = dc-gateway
+gateway.sleep.observer = 1
+gateway.sleep.watcher = 60
+gateway.thread.max = 10
+
+[http]
+baseurl = http://localhost

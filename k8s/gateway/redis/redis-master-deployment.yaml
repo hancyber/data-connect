@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-master-deployment
+  labels:
+    tier: database
+    app: redis
+    role: master
+spec:
+  selector:
+    matchLabels:
+      tier: database
+      app: redis
+      role: master
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        tier: database
+        app: redis
+        role: master
+        redis.access: 'true'
+    spec:
+      containers:
+        - name: redis
+          image: hgbdev/hancyberML-redis:1.0.0
+          imagePullPolicy: Always
+          command: ["/root/redis/src/redis-server"]
+          args: ["/etc/redis/redis.conf"]
+          ports:
+            - name: redis-port
+              containerPort: 6379
+          resources:
+            limits:
+              cpu: 250m
+              memory: 512Mi
+            requests:
+              cpu: 250m
+              memory: 512Mi
+          volumeMounts:
+            - name: redis-volume
+              mountPath: /data
+            - name: redis-config-volume
+              mountPath: /etc/redis/redis.conf
+              subPath: redis.conf
+            - name: redis-tls-rootca
+              mountPath: /etc/tls/rootca.crt
+              subPath: rootca.crt
+            - name: redis-tls-cert
+              mountPath: /etc/tls/redis.crt
+              subPath: redis.crt
+            - name: redis-tls-key
+              mountPath: /etc/tls/redis.key
+              subPath: redis.key
+      imagePullSecrets:
+        - name: dc-imagepull-secret
+      volumes:
+        - name: redis-volume
+          persistentVolumeClaim:
+            claimName: redis-data-pvc
+        - name: redis-config-volume
+          configMap:
+            name: redis-config
+            items:
+              - key: redis.conf
+                path: redis.conf
+        - name: redis-tls-rootca
+          configMap:
+            name: redis-tls-config
+            items:
+              - key: rootca.crt
+                path: rootca.crt
+        - name: redis-tls-cert
+          configMap:
+            name: redis-tls-config
+            items:
+              - key: redis.crt
+                path: redis.crt
+        - name: redis-tls-key
+          configMap:
+            name: redis-tls-config
+            items:
+              - key: redis.key
+                path: redis.key

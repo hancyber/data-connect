@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dc-embulk-data-pvc
+spec:
+  accessModes:
+  - ReadWriteMany
+  storageClassName: dc-sc
+  resources:
+    requests:
+      storage: 1Gi

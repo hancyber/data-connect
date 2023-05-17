@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  labels:
+    tier: database
+    app: redis
+spec:
+  selector:
+    tier: database
+    app: redis
+    role: master
+  ports:
+    - port: 6379
+      protocol: TCP

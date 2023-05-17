@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dc-config
+data:
+  config.conf: |
+    [base]
+    config.section = common,embulk,socket,redis
+    [embulk]
+    tpl.path = template
+    tpl.main = main.tpl
+    path.conf = embulk/conf
+    path.log.guess = embulk/log/guess
+    path.log.preview = embulk/log/preview
+    path.log.run = embulk/log/run
+    file.guess = bin/embulk_guess.sh
+    file.preview = bin/embulk_preview.sh
+    file.run = bin/embulk_run.sh
+    [common]
+    gateway = socket
+    # gateway = redis
+    [socket]
+    host = 0.0.0.0
+    port = 19999
+    backlog = 32
+    buffer.size = 2048
+    [redis]
+    service.name = redis-service
+    ssl.ca.certs = /etc/tls/certs/rootca.crt
+    # server.info = xxx.xxx.xxx.xxx:26379
+    server.info = redis-sentinel-service:26379
+    gateway.channel = dc-gateway
+    gateway.sleep.observer = 1
+    gateway.sleep.watcher = 60
+    gateway.thread.max = 10
+    [http]
+    baseurl = http://localhost
+  CONF_FILE: "/home/hgb/conf.d/config.conf"
+  APITEST_PORT: "8000"
