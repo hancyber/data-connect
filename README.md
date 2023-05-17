@@ -39,3 +39,7 @@ gateway 테스트용 fastapi 서버 구동 스크립트
 **requirements.txt**  
 &nbsp; &nbsp;
 python dependencies  
+
+---
+## **본 코드는 단순 리뷰용입니다.**    
+### 코드의 일부/라이브러리는 의도적으로 누락되었거나 일부 데이터는 임의의 데이터로 교체되었습니다.
